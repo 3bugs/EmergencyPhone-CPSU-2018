@@ -11,11 +11,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "phone.db";
     private static final int DATABASE_VERSION = 1;
 
-    private static final String TABLE_NAME = "phone";
-    private static final String COL_ID = "_id";
-    private static final String COL_TITLE = "title";
-    private static final String COL_NUMBER = "number";
-    private static final String COL_IMAGE = "image";
+    public static final String TABLE_NAME = "phone";
+    public static final String COL_ID = "_id";
+    public static final String COL_TITLE = "title";
+    public static final String COL_NUMBER = "number";
+    public static final String COL_IMAGE = "image";
 
     private static final String SQL_CREATE_TABLE_PHONE
             = "CREATE TABLE " + TABLE_NAME + "("
