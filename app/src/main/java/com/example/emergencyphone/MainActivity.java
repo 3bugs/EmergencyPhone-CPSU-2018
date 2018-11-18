@@ -132,10 +132,6 @@ public class MainActivity extends AppCompatActivity {
                 // _id ของ item ในลิสต์ที่ถูกแตะค้าง
                 long id = item._id;
 
-                Intent intent = new Intent(MainActivity.this, AddPhoneItemActivity.class);
-                intent.putExtra("id", id);
-                startActivity(intent);
-
                 // แก้ไขเบอร์โทรเป็น 9999999999
                 ContentValues cv = new ContentValues();
                 cv.put(COL_NUMBER, "9999999999");
