@@ -19,6 +19,8 @@
         </activity>
         <activity android:name=".AddPhoneItemActivity">
         </activity>
+        <activity android:name=".EditPhoneItemActivity">
+        </activity>
     </application>
 
 </manifest>

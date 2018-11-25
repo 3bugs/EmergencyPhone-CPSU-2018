@@ -1,19 +1,20 @@
 package com.example.emergencyphone;
 
-import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.emergencyphone.adapter.PhoneListAdapter;
 import com.example.emergencyphone.db.DatabaseHelper;
 import com.example.emergencyphone.model.PhoneItem;
 
@@ -50,26 +51,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        Button editButton = findViewById(R.id.edit_button);
-        editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ContentValues cv = new ContentValues();
-                cv.put(COL_TITLE, "เหตุด่วน เหตุร้าย");
-                cv.put(COL_NUMBER, "191");
-
-                mDb.update(
-                        TABLE_NAME,
-                        cv,
-                        COL_NUMBER + " = ?",
-                        new String[]{"99999"}
-                );
-
-                loadPhoneData();
-                setupListView();
-            }
-        });
     }
 
     @Override
@@ -102,9 +83,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupListView() {
-        ArrayAdapter<PhoneItem> adapter = new ArrayAdapter<>(
+        PhoneListAdapter adapter = new PhoneListAdapter(
                 MainActivity.this,
-                android.R.layout.simple_list_item_1,
+                R.layout.item_phone,
                 mPhoneItemList
         );
         ListView lv = findViewById(R.id.result_list_view);
@@ -127,24 +108,48 @@ public class MainActivity extends AppCompatActivity {
         });
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
-                PhoneItem item = mPhoneItemList.get(position);
-                // _id ของ item ในลิสต์ที่ถูกแตะค้าง
-                long id = item._id;
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int position, long l) {
+                String[] items = new String[]{
+                        "Edit",
+                        "Delete"
+                };
 
-                // แก้ไขเบอร์โทรเป็น 9999999999
-                ContentValues cv = new ContentValues();
-                cv.put(COL_NUMBER, "9999999999");
+                new AlertDialog.Builder(MainActivity.this)
+                        .setItems(items, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                final PhoneItem phoneItem = mPhoneItemList.get(position);
 
-                mDb.update(
-                        TABLE_NAME,
-                        cv,
-                        COL_ID + " = ?", // เงื่อนไขของแถวใน table ที่จะแก้ไขข้อมูล ก็คือแถวที่สัมพันธ์กับ item ในลิสต์ที่ถูกแตะค้าง
-                        new String[]{String.valueOf(id)}
-                );
-
-                loadPhoneData();
-                setupListView();
+                                switch (i) {
+                                    case 0: // Edit
+                                        Intent intent = new Intent(MainActivity.this, EditPhoneItemActivity.class);
+                                        intent.putExtra("title", phoneItem.title);
+                                        intent.putExtra("number", phoneItem.number);
+                                        intent.putExtra("id", phoneItem._id);
+                                        startActivity(intent);
+                                        break;
+                                    case 1: // Delete
+                                        new AlertDialog.Builder(MainActivity.this)
+                                                .setMessage("ต้องการลบข้อมูลเบอร์โทรนี้ ใช่หรือไม่")
+                                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                                        mDb.delete(
+                                                                TABLE_NAME,
+                                                                COL_ID + " = ?",
+                                                                new String[]{String.valueOf(phoneItem._id)}
+                                                        );
+                                                        loadPhoneData();
+                                                        setupListView();
+                                                    }
+                                                })
+                                                .setNegativeButton("No", null)
+                                                .show();
+                                        break;
+                                }
+                            }
+                        })
+                        .show();
 
                 return true;
             }
