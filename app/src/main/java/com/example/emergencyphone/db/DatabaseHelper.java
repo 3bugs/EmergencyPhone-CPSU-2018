@@ -36,11 +36,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(COL_TITLE, "สถาบันการแพทย์ฉุกเฉินแห่งชาติ");
         cv.put(COL_NUMBER, "1669");
+        cv.put(COL_IMAGE, "emergency_medicine_1669.png");
         db.insert(TABLE_NAME, null, cv);
 
         cv = new ContentValues();
         cv.put(COL_TITLE, "ศูนย์เอราวัณ สำนักการแพทย์ กทม.");
         cv.put(COL_NUMBER, "1646");
+        cv.put(COL_IMAGE, "bangkok_ems_1646.png");
         db.insert(TABLE_NAME, null, cv);
     }
 

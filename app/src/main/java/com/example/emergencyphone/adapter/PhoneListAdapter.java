@@ -1,6 +1,10 @@
 package com.example.emergencyphone.adapter;
 
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -13,6 +17,9 @@ import android.widget.TextView;
 import com.example.emergencyphone.R;
 import com.example.emergencyphone.model.PhoneItem;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public class PhoneListAdapter extends ArrayAdapter<PhoneItem> {
@@ -43,10 +50,25 @@ public class PhoneListAdapter extends ArrayAdapter<PhoneItem> {
         PhoneItem phoneItem = mPhoneItemList.get(position);
         String title = phoneItem.title;
         String number = phoneItem.number;
+        String filename = phoneItem.image;
 
         titleTextView.setText(title);
         numberTextView.setText(number);
-        //imageView.setImageResource(R.drawable.xxx);
+
+        AssetManager am = mContext.getAssets();
+        try {
+            InputStream is = am.open(filename);
+            Drawable drawable = Drawable.createFromStream(is, "");
+            imageView.setImageDrawable(drawable);
+        } catch (IOException e) {
+            File privateDir = mContext.getFilesDir();
+            File logoFile = new File(privateDir, filename);
+
+            Bitmap bitmap = BitmapFactory.decodeFile(logoFile.getAbsolutePath(), null);
+            imageView.setImageBitmap(bitmap);
+
+            e.printStackTrace();
+        }
 
         return view;
     }
